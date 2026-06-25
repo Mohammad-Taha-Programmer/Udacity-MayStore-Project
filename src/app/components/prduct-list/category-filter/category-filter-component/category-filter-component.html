@@ -1,0 +1,13 @@
+  <div class="category-filter">
+      <h3>Categories</h3>
+      <div class="category-list">
+        <button class="category-btn" [class.active]="selectedId === null" (click)="selectCategory(null)">
+          All Products
+        </button>
+        @for (category of categories; track category.id) {
+          <button class="category-btn" [class.active]="selectedId === category.id" (click)="selectCategory(category.id)">
+            {{ category.name }}
+          </button>
+        }
+      </div>
+    </div>

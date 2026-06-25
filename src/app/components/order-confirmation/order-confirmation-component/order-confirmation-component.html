@@ -1,0 +1,27 @@
+ <div class="confirmation-page">
+      <div class="confirmation-content">
+        <div class="success-icon">&#10003;</div>
+        <h1>Order Confirmed!</h1>
+        <p class="order-number">Order #{{ orderId }}</p>
+        <p>Thank you for your purchase!</p>
+        <p class="confirmation-message">A confirmation email has been sent.</p>
+        <div class="order-details">
+          <h3>Order Summary</h3>
+          @if (orderService.lastOrder()) {
+            <div class="order-items">
+              @for (item of orderService.lastOrder()!.items; track item.id) {
+                <div class="order-item">
+                  <span>{{ item.product.name }} x{{ item.quantity }}</span>
+                  <span>\${{ (item.product.price * item.quantity).toFixed(2) }}</span>
+                </div>
+              }
+            </div>
+            <div class="order-total">
+              <span>Total Paid</span>
+              <span>\${{ orderService.lastOrder()!.total.toFixed(2) }}</span>
+            </div>
+          }
+        </div>
+        <a routerLink="/" class="continue-shopping-btn">Continue Shopping</a>
+      </div>
+    </div>

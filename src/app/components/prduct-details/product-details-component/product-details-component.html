@@ -1,0 +1,40 @@
+ <div class="product-detail-page">
+      @if (loading()) {
+        <div class="loading">Loading product...</div>
+      } @else if (!product()) {
+        <div class="error">Product not found</div>
+      } @else {
+        <div class="product-detail">
+          <a routerLink="/" class="back-link">&larr; Back to products</a>
+          <div class="product-detail-content">
+            <div class="product-detail-image">
+              <img [src]="product()!.image_url || defaultImage" [alt]="product()!.name">
+            </div>
+            <div class="product-detail-info">
+              <h1>{{ product()!.name }}</h1>
+              <p class="product-detail-category">
+                {{ categoryName() }}
+              </p>
+              <p class="product-detail-price">\${{ product()!.price.toFixed(2) }}</p>
+              <p class="product-detail-description">{{ product()!.description || 'No description available' }}</p>
+              <p class="product-detail-stock" [class.low]="product()!.stock < 10 && product()!.stock > 0" [class.out]="product()!.stock === 0">
+                {{ product()!.stock > 0 ? product()!.stock + ' items in stock' : 'Out of stock' }}
+              </p>
+
+              <div class="quantity-selector">
+                <label>Quantity:</label>
+                <div class="quantity-controls">
+                  <button class="qty-btn" (click)="decrementQty()" [disabled]="quantity() <= 1">-</button>
+                  <span class="quantity-value">{{ quantity() }}</span>
+                  <button class="qty-btn" (click)="incrementQty()" [disabled]="quantity() >= product()!.stock">+</button>
+                </div>
+              </div>
+
+              <button class="add-to-cart-btn-large" (click)="addToCart()" [disabled]="product()!.stock === 0">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>

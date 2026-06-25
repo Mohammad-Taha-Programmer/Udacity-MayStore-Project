@@ -1,0 +1,20 @@
+    <div class="product-card">
+      <a [routerLink]="['/products', product.id]" class="product-link">
+        <div class="product-image">
+          <img [src]="product.image_url || defaultImage" [alt]="product.name">
+        </div>
+        <div class="product-info">
+          <h3>{{ product.name }}</h3>
+          <p class="product-description">{{ product.description || 'No description' }}</p>
+          <div class="product-footer">
+            <span class="product-price">\${{ product.price.toFixed(2) }}</span>
+            <span class="product-stock" [class.low]="product.stock < 10 && product.stock > 0" [class.out]="product.stock === 0">
+              {{ product.stock > 0 ? product.stock + ' in stock' : 'Out of stock' }}
+            </span>
+          </div>
+        </div>
+      </a>
+      <button class="add-to-cart-btn" [disabled]="product.stock === 0" (click)="addToCart()">
+        Add to Cart
+      </button>
+    </div>

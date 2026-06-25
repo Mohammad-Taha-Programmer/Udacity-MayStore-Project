@@ -1,0 +1,29 @@
+ <div class="product-list-page">
+      <div class="shop-container">
+        <aside class="sidebar">
+          <app-category-filter-component
+            [categories]="productService.categories()"
+            [selectedId]="productService.selectedCategory()"
+            (categoryChange)="onCategoryChange($event)">
+          </app-category-filter-component>
+        </aside>
+        <main class="main-content">
+          <div class="products-header">
+            <h2>{{ categoryName() }}</h2>
+            <span class="products-count">{{ productService.products().length }} products</span>
+          </div>
+
+          @if (productService.loading()) {
+            <div class="loading">Loading products...</div>
+          } @else if (productService.error()) {
+            <div class="error">{{ productService.error() }}</div>
+          } @else {
+            <div class="products-grid">
+              @for (product of productService.products(); track product.id) {
+                <app-product-card-component [product]="product"></app-product-card-component>
+              }
+            </div>
+          }
+        </main>
+      </div>
+    </div>

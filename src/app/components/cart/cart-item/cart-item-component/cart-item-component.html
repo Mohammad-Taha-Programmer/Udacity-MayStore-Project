@@ -1,0 +1,16 @@
+  <div class="cart-item">
+      <img class="cart-item-image" [src]="item.product.image_url || defaultImage" [alt]="item.product.name">
+      <div class="cart-item-details">
+        <h4>{{ item.product.name }}</h4>
+        <p class="cart-item-price">\${{ item.product.price.toFixed(2) }}</p>
+      </div>
+      <div class="cart-item-quantity">
+        <button class="qty-btn" (click)="decrement()">&#8722;</button>
+        <span>{{ item.quantity }}</span>
+        <button class="qty-btn" (click)="increment()">&#43;</button>
+      </div>
+      <div class="cart-item-subtotal">
+        \${{ (item.product.price * item.quantity).toFixed(2) }}
+      </div>
+      <button class="remove-btn" (click)="remove()">&#10005;</button>
+    </div>
