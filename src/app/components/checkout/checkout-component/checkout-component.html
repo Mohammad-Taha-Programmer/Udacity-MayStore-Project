@@ -1,188 +1,222 @@
-   <div class="checkout-page">
-      <div class="checkout-header">
-        <h1>Checkout</h1>
-        <a routerLink="/cart" class="back-link">&larr; Back to Cart</a>
-      </div>
+<div class="checkout-page">
+  <div class="checkout-header">
+    <h1>Checkout</h1>
+    <a routerLink="/cart" class="back-link">&larr; Back to Cart</a>
+  </div>
 
-      @if (step() === 'form') {
-        <form #checkoutForm="ngForm" (ngSubmit)="submitOrder()" class="checkout-form-container">
-          <div class="checkout-content">
-            <div class="checkout-forms">
-              <section class="form-section">
-                <h3>Shipping Information</h3>
-                <div class="form-group">
-                  <label for="fullName">Full Name *</label>
-                  <input
-                    type="text"
-                    id="fullName"
-                    name="fullName"
-                    [(ngModel)]="shipping.fullName"
-                    #fullName="ngModel"
-                    required
-                    minlength="2"
-                    placeholder="John Doe">
-                  @if (fullName.invalid && (fullName.dirty || fullName.touched)) {
-                    <span class="error-text">Name is required (min 2 characters)</span>
-                  }
-                </div>
-
-                <div class="form-group">
-                  <label for="email">Email *</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    [(ngModel)]="shipping.email"
-                    #email="ngModel"
-                    required
-                    email
-                    placeholder="john@example.com">
-                  @if (email.invalid && (email.dirty || email.touched)) {
-                    <span class="error-text">Valid email is required</span>
-                  }
-                </div>
-
-                <div class="form-group">
-                  <label for="address">Address *</label>
-                  <input
-                    type="text"
-                    id="address"
-                    name="address"
-                    [(ngModel)]="shipping.address"
-                    #address="ngModel"
-                    required
-                    placeholder="123 Main Street">
-                  @if (address.invalid && (address.dirty || address.touched)) {
-                    <span class="error-text">Address is required</span>
-                  }
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="city">City *</label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      [(ngModel)]="shipping.city"
-                      #city="ngModel"
-                      required
-                      placeholder="New York">
-                    @if (city.invalid && (city.dirty || city.touched)) {
-                      <span class="error-text">City is required</span>
-                    }
-                  </div>
-                  <div class="form-group">
-                    <label for="zip">ZIP Code *</label>
-                    <input
-                      type="text"
-                      id="zip"
-                      name="zip"
-                      [(ngModel)]="shipping.zip"
-                      #zip="ngModel"
-                      required
-                      pattern="[0-9]{5}"
-                      placeholder="10001">
-                    @if (zip.invalid && (zip.dirty || zip.touched)) {
-                      <span class="error-text">Valid ZIP required (5 digits)</span>
-                    }
-                  </div>
-                </div>
-              </section>
-
-              <section class="form-section">
-                <h3>Payment Information</h3>
-                <div class="form-group">
-                  <label for="cardNumber">Card Number *</label>
-                  <input
-                    type="text"
-                    id="cardNumber"
-                    name="cardNumber"
-                    [(ngModel)]="payment.cardNumber"
-                    #cardNumber="ngModel"
-                    required
-                    pattern="[0-9]{16}"
-                    maxlength="16"
-                    placeholder="1234567890123456">
-                  @if (cardNumber.invalid && (cardNumber.dirty || cardNumber.touched)) {
-                    <span class="error-text">Valid 16-digit card number required</span>
-                  }
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="expiry">Expiry Date *</label>
-                    <input
-                      type="text"
-                      id="expiry"
-                      name="expiry"
-                      [(ngModel)]="payment.expiry"
-                      #expiry="ngModel"
-                      required
-                      pattern="[0-9]{2}/[0-9]{2}"
-                      maxlength="5"
-                      placeholder="MM/YY">
-                    @if (expiry.invalid && (expiry.dirty || expiry.touched)) {
-                      <span class="error-text">Use MM/YY format</span>
-                    }
-                  </div>
-                  <div class="form-group">
-                    <label for="cvv">CVV *</label>
-                    <input
-                      type="text"
-                      id="cvv"
-                      name="cvv"
-                      [(ngModel)]="payment.cvv"
-                      #cvv="ngModel"
-                      required
-                      pattern="[0-9]{3,4}"
-                      maxlength="4"
-                      placeholder="123">
-                    @if (cvv.invalid && (cvv.dirty || cvv.touched)) {
-                      <span class="error-text">3-4 digit CVV required</span>
-                    }
-                  </div>
-                </div>
-              </section>
+  @if (step() === 'form') {
+    <form #checkoutForm="ngForm" (ngSubmit)="submitOrder()" class="checkout-form-container">
+      <div class="checkout-content">
+        <div class="checkout-forms">
+          <section class="form-section">
+            <h3>Shipping Information</h3>
+            <div class="form-group">
+              <label for="fullName">Full Name *</label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                [(ngModel)]="shipping.fullName"
+                #fullName="ngModel"
+                (ngModelChange)="validateField('fullName', $event)"
+                required
+                minlength="2"
+                placeholder="John Doe">
+              <!-- ngModelChange error -->
+              @if (errors.fullName) {
+                <span class="error-text">{{ errors.fullName }}</span>
+              }
+              <!-- fallback Angular validation error -->
+              @if (fullName.invalid && (fullName.dirty || fullName.touched) && !errors.fullName) {
+                <span class="error-text">Name is required (min 2 characters)</span>
+              }
             </div>
 
-            <div class="order-summary-checkout">
-              <h3>Order Summary</h3>
-              @for (item of cartService.cartItems(); track item.id) {
-                <div class="summary-item">
-                  <span>{{ item.product.name }} x{{ item.quantity }}</span>
-                  <span>\${{ (item.product.price * item.quantity).toFixed(2) }}</span>
-                </div>
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                [(ngModel)]="shipping.email"
+                #email="ngModel"
+                (ngModelChange)="validateField('email', $event)"
+                required
+                email
+                placeholder="john@example.com">
+              @if (errors.email) {
+                <span class="error-text">{{ errors.email }}</span>
               }
-              <div class="summary-divider"></div>
-              <div class="summary-total">
-                <span>Total</span>
-                <span>\${{ cartService.cartTotal().toFixed(2) }}</span>
+              @if (email.invalid && (email.dirty || email.touched) && !errors.email) {
+                <span class="error-text">Valid email is required</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="address">Address *</label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                [(ngModel)]="shipping.address"
+                #address="ngModel"
+                (ngModelChange)="validateField('address', $event)"
+                required
+                placeholder="123 Main Street">
+              @if (errors.address) {
+                <span class="error-text">{{ errors.address }}</span>
+              }
+              @if (address.invalid && (address.dirty || address.touched) && !errors.address) {
+                <span class="error-text">Address is required</span>
+              }
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">City *</label>
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  [(ngModel)]="shipping.city"
+                  #city="ngModel"
+                  (ngModelChange)="validateField('city', $event)"
+                  required
+                  placeholder="New York">
+                @if (errors.city) {
+                  <span class="error-text">{{ errors.city }}</span>
+                }
+                @if (city.invalid && (city.dirty || city.touched) && !errors.city) {
+                  <span class="error-text">City is required</span>
+                }
+              </div>
+              <div class="form-group">
+                <label for="zip">ZIP Code *</label>
+                <input
+                  type="text"
+                  id="zip"
+                  name="zip"
+                  [(ngModel)]="shipping.zip"
+                  #zip="ngModel"
+                  (ngModelChange)="validateField('zip', $event)"
+                  required
+                  pattern="[0-9]{5}"
+                  placeholder="10001">
+                @if (errors.zip) {
+                  <span class="error-text">{{ errors.zip }}</span>
+                }
+                @if (zip.invalid && (zip.dirty || zip.touched) && !errors.zip) {
+                  <span class="error-text">Valid ZIP required (5 digits)</span>
+                }
               </div>
             </div>
-          </div>
+          </section>
 
-          <button
-            type="submit"
-            class="pay-btn"
-            [disabled]="checkoutForm.invalid || processing()">
-            @if (processing()) {
-              Processing...
-            } @else {
-              Pay \${{ cartService.cartTotal().toFixed(2) }}
-            }
-          </button>
-        </form>
-      }
+          <section class="form-section">
+            <h3>Payment Information</h3>
+            <div class="form-group">
+              <label for="cardNumber">Card Number *</label>
+              <input
+                type="text"
+                id="cardNumber"
+                name="cardNumber"
+                [(ngModel)]="payment.cardNumber"
+                #cardNumber="ngModel"
+                (ngModelChange)="validateField('cardNumber', $event)"
+                required
+                pattern="[0-9]{16}"
+                maxlength="16"
+                placeholder="1234567890123456">
+              @if (errors.cardNumber) {
+                <span class="error-text">{{ errors.cardNumber }}</span>
+              }
+              @if (cardNumber.invalid && (cardNumber.dirty || cardNumber.touched) && !errors.cardNumber) {
+                <span class="error-text">Valid 16-digit card number required</span>
+              }
+            </div>
 
-      @if (step() === 'confirmation') {
-        <div class="checkout-success">
-          <div class="success-icon">&#10003;</div>
-          <h2>Order Confirmed!</h2>
-          <p class="order-id">Order #{{ order()!.id }}</p>
-          <p>Thank you, {{ order()!.shipping.fullName }}!</p>
-          <p class="order-email-confirmation">A confirmation email has been sent to {{ order()!.shipping.email }}</p>
-          <a routerLink="/" class="continue-shopping-btn">Continue Shopping</a>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="expiry">Expiry Date *</label>
+                <input
+                  type="text"
+                  id="expiry"
+                  name="expiry"
+                  [(ngModel)]="payment.expiry"
+                  #expiry="ngModel"
+                  (ngModelChange)="validateField('expiry', $event)"
+                  required
+                  pattern="[0-9]{2}/[0-9]{2}"
+                  maxlength="5"
+                  placeholder="MM/YY">
+                @if (errors.expiry) {
+                  <span class="error-text">{{ errors.expiry }}</span>
+                }
+                @if (expiry.invalid && (expiry.dirty || expiry.touched) && !errors.expiry) {
+                  <span class="error-text">Use MM/YY format</span>
+                }
+              </div>
+              <div class="form-group">
+                <label for="cvv">CVV *</label>
+                <input
+                  type="text"
+                  id="cvv"
+                  name="cvv"
+                  [(ngModel)]="payment.cvv"
+                  #cvv="ngModel"
+                  (ngModelChange)="validateField('cvv', $event)"
+                  required
+                  pattern="[0-9]{3,4}"
+                  maxlength="4"
+                  placeholder="123">
+                @if (errors.cvv) {
+                  <span class="error-text">{{ errors.cvv }}</span>
+                }
+                @if (cvv.invalid && (cvv.dirty || cvv.touched) && !errors.cvv) {
+                  <span class="error-text">3-4 digit CVV required</span>
+                }
+              </div>
+            </div>
+          </section>
         </div>
-      }
+
+        <div class="order-summary-checkout">
+          <h3>Order Summary</h3>
+          @for (item of cartService.cartItems(); track item.id) {
+            <div class="summary-item">
+              <span>{{ item.product.name }} x{{ item.quantity }}</span>
+              <span>\${{ (item.product.price * item.quantity).toFixed(2) }}</span>
+            </div>
+          }
+          <div class="summary-divider"></div>
+          <div class="summary-total">
+            <span>Total</span>
+            <span>\${{ cartService.cartTotal().toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="pay-btn"
+        [disabled]="checkoutForm.invalid || processing()">
+        @if (processing()) {
+          Processing...
+        } @else {
+          Pay \${{ cartService.cartTotal().toFixed(2) }}
+        }
+      </button>
+    </form>
+  }
+
+  @if (step() === 'confirmation') {
+    <div class="checkout-success">
+      <div class="success-icon">&#10003;</div>
+      <h2>Order Confirmed!</h2>
+      <p class="order-id">Order #{{ order()!.id }}</p>
+      <p>Thank you, {{ order()!.shipping.fullName }}!</p>
+      <p class="order-email-confirmation">A confirmation email has been sent to {{ order()!.shipping.email }}</p>
+      <a routerLink="/" class="continue-shopping-btn">Continue Shopping</a>
     </div>
+  }
+</div>
